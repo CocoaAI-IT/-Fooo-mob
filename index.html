@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Four - コネクトフォー</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 class="title">CONNECT FOUR</h1>
+            <p class="subtitle">4つ並べて勝利しよう！</p>
+        </header>
+
+        <!-- ゲームモード選択 -->
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="pvp">
+                <span class="mode-icon">👥</span>
+                <span>PVP</span>
+            </button>
+            <button class="mode-btn" data-mode="pvc">
+                <span class="mode-icon">🤖</span>
+                <span>PVC</span>
+            </button>
+        </div>
+
+        <!-- 難易度選択（PVCモード時のみ表示） -->
+        <div class="difficulty-selector hidden">
+            <label>難易度:</label>
+            <select id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium" selected>Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+
+        <!-- スコアボード -->
+        <div class="scoreboard">
+            <div class="player-score player1">
+                <div class="player-name" id="player1-name">Player 1</div>
+                <div class="score-value">
+                    <span class="player-disc blue"></span>
+                    <span id="player1-score">0</span>勝
+                </div>
+            </div>
+            <div class="draw-score">
+                <div class="draw-label">引き分け</div>
+                <div class="score-value" id="draw-score">0</div>
+            </div>
+            <div class="player-score player2">
+                <div class="player-name" id="player2-name">Player 2</div>
+                <div class="score-value">
+                    <span class="player-disc red"></span>
+                    <span id="player2-score">0</span>勝
+                </div>
+            </div>
+        </div>
+
+        <!-- ゲームボード -->
+        <div class="game-wrapper">
+            <div class="turn-indicator">
+                <span id="current-player">Player 1</span> のターン
+                <span class="player-disc" id="turn-disc"></span>
+            </div>
+
+            <div class="board-container">
+                <!-- ホバープレビュー -->
+                <div class="hover-preview" id="hover-preview">
+                    <div class="preview-disc"></div>
+                </div>
+
+                <!-- ボード -->
+                <div class="board" id="board">
+                    <!-- JavaScriptで生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- コントロールボタン -->
+        <div class="controls">
+            <button class="btn btn-primary" id="new-game">
+                <span>🔄</span> 新しいゲーム
+            </button>
+            <button class="btn btn-secondary" id="reset-score">
+                <span>📊</span> スコアリセット
+            </button>
+            <button class="btn btn-icon" id="sound-toggle" title="サウンド">
+                <span id="sound-icon">🔊</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 勝利モーダル -->
+    <div class="modal" id="win-modal">
+        <div class="modal-content">
+            <div class="modal-trophy">🏆</div>
+            <h2 class="modal-title" id="win-message">Player 1 の勝利！</h2>
+            <div class="modal-winning-line" id="winning-line-info"></div>
+            <button class="btn btn-primary" id="play-again">もう一度プレイ</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
