@@ -344,6 +344,24 @@ body {
 }
 
 /* ========================================
+   3Dボード
+   ======================================== */
+.board-3d-container {
+    width: 100%;
+    height: 600px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    position: relative;
+}
+
+.board-3d-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* ========================================
    コントロールボタン
    ======================================== */
 .controls {

@@ -13,6 +13,7 @@ import { peerManager } from './online/peer.js';
 import { ScoreStorage } from './storage/localStorage.js';
 import { gameHistoryDB } from './storage/indexedDB.js';
 import { BoardUI } from './ui/board-ui.js';
+import { Board3D } from './ui/board-3d.js';
 import { ModalManager } from './ui/modal.js';
 import { controlsManager } from './ui/controls.js';
 import { AudioManager } from './utils/audio.js';
@@ -20,6 +21,8 @@ import { AudioManager } from './utils/audio.js';
 class ConnectFourGame {
     constructor() {
         this.initialized = false;
+        this.board3d = null;
+        this.use3D = true; // 3Dモードを使用
     }
 
     /**
@@ -38,8 +41,21 @@ class ConnectFourGame {
         }
 
         // ボード描画
-        const boardElement = document.getElementById('board');
-        BoardUI.renderBoard(boardElement);
+        if (this.use3D) {
+            // 3Dボード初期化
+            const container3D = document.getElementById('board-3d-container');
+            this.board3d = new Board3D(container3D);
+            this.board3d.init();
+
+            // 3Dボードのクリックコールバックを設定
+            this.board3d.onCellClick = (col) => this._handleCellClick(col);
+        } else {
+            // 2Dボード描画
+            const boardElement = document.getElementById('board');
+            BoardUI.renderBoard(boardElement);
+            document.getElementById('board-2d-container').classList.remove('hidden');
+            document.getElementById('board-3d-container').classList.add('hidden');
+        }
 
         // イベントリスナー設定
         this._setupEventListeners();
@@ -138,7 +154,7 @@ class ConnectFourGame {
      * @param {number} col - 列番号
      * @private
      */
-    _handleCellClick(col) {
+    async _handleCellClick(col) {
         if (!gameState.isGameActive()) return;
 
         // オンラインモードチェック
@@ -157,12 +173,20 @@ class ConnectFourGame {
             return;
         }
 
-        // ディスクを落とす
+        const currentPlayer = gameState.getCurrentPlayer();
+
+        // ディスクを落とす（ゲームロジック）
         const row = Board.dropDisc(col);
         if (row === null) return;
 
         AudioManager.play('drop');
-        BoardUI.updateBoardUI();
+
+        // 3Dモードの場合は物理演算でディスクを落とす
+        if (this.use3D && this.board3d) {
+            await this.board3d.dropDisc(col, currentPlayer);
+        } else {
+            BoardUI.updateBoardUI();
+        }
 
         // 勝利判定
         const gameOver = Rules.checkGameOver();
@@ -213,15 +237,22 @@ class ConnectFourGame {
      * AIの手を処理
      * @private
      */
-    _handleAIMove() {
+    async _handleAIMove() {
         if (!gameState.isGameActive()) return;
 
         const col = AI.calculateMove();
+        const currentPlayer = gameState.getCurrentPlayer();
         const row = Board.dropDisc(col);
         if (row === null) return;
 
         AudioManager.play('drop');
-        BoardUI.updateBoardUI();
+
+        // 3Dモードの場合は物理演算でディスクを落とす
+        if (this.use3D && this.board3d) {
+            await this.board3d.dropDisc(col, currentPlayer);
+        } else {
+            BoardUI.updateBoardUI();
+        }
 
         const gameOver = Rules.checkGameOver();
         if (gameOver.gameOver) {
@@ -244,7 +275,14 @@ class ConnectFourGame {
 
                 gameState.setBoard(data.board);
                 gameState.currentPlayer = data.nextPlayer;
-                BoardUI.updateBoardUI();
+
+                // 3Dボードを更新（全体を再描画）
+                if (this.use3D && this.board3d) {
+                    this.board3d.updateBoard();
+                } else {
+                    BoardUI.updateBoardUI();
+                }
+
                 this._updateAllUI();
 
                 if (data.won) {
@@ -315,10 +353,18 @@ class ConnectFourGame {
     _resetGame() {
         ModalManager.hideModal();
         gameState.initBoard();
-        const boardElement = document.getElementById('board');
-        BoardUI.renderBoard(boardElement);
-        controlsManager.initBoardListeners(boardElement);
-        BoardUI.updateBoardUI();
+
+        if (this.use3D && this.board3d) {
+            // 3Dボードをクリア
+            this.board3d.clearBoard();
+        } else {
+            // 2Dボード再描画
+            const boardElement = document.getElementById('board');
+            BoardUI.renderBoard(boardElement);
+            controlsManager.initBoardListeners(boardElement);
+            BoardUI.updateBoardUI();
+        }
+
         this._updateAllUI();
 
         // オンラインモードでホストの場合は通知

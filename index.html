@@ -10,6 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- PeerJS CDN -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <!-- Three.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <!-- Cannon.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/cannon@0.6.2/build/cannon.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -112,7 +116,13 @@
                 <span class="player-disc" id="turn-disc"></span>
             </div>
 
-            <div class="board-container">
+            <!-- 3Dボードコンテナ -->
+            <div class="board-3d-container" id="board-3d-container">
+                <!-- Three.jsで描画 -->
+            </div>
+
+            <!-- 2Dボードコンテナ（非表示、フォールバック用） -->
+            <div class="board-container hidden" id="board-2d-container">
                 <!-- ホバープレビュー -->
                 <div class="hover-preview" id="hover-preview">
                     <div class="preview-disc"></div>
