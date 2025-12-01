@@ -543,6 +543,251 @@ body {
 }
 
 /* ========================================
+   オンライン接続UI
+   ======================================== */
+.online-connection {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+}
+
+.connection-status {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--accent-color);
+}
+
+.status-indicator {
+    font-size: 1.2rem;
+}
+
+.connection-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.room-section, .join-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.room-info {
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.room-info label {
+    font-weight: 600;
+    color: var(--accent-color);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.room-id-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+}
+
+.room-id-display code {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--player1-color);
+    user-select: all;
+}
+
+.btn-copy {
+    background: var(--player1-color);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.btn-copy:hover {
+    background: #2563eb;
+    transform: scale(1.1);
+}
+
+.room-hint {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    margin-top: 8px;
+    text-align: center;
+}
+
+.join-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.join-input-group input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    transition: border-color 0.2s;
+}
+
+.join-input-group input:focus {
+    outline: none;
+    border-color: var(--player1-color);
+}
+
+.join-input-group input::placeholder {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+}
+
+/* ========================================
+   ゲーム履歴モーダル
+   ======================================== */
+.modal-large {
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #f1f5f9;
+    transform: rotate(90deg);
+}
+
+.history-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, var(--player1-color), var(--player2-color));
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.history-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.history-item {
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 15px;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.history-item:hover {
+    background: #e2e8f0;
+    transform: translateX(5px);
+}
+
+.history-icon {
+    font-size: 2rem;
+}
+
+.history-details {
+    text-align: left;
+}
+
+.history-winner {
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 3px;
+}
+
+.history-mode {
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+.history-date {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-align: right;
+}
+
+.history-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-color);
+    opacity: 0.6;
+}
+
+.modal-footer {
+    padding-top: 15px;
+    border-top: 2px solid #e2e8f0;
+    display: flex;
+    justify-content: center;
+}
+
+/* ========================================
    ユーティリティ
    ======================================== */
 .hidden {

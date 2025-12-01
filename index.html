@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- PeerJS CDN -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -19,13 +21,17 @@
 
         <!-- ゲームモード選択 -->
         <div class="mode-selector">
-            <button class="mode-btn active" data-mode="pvp">
+            <button class="mode-btn active" data-mode="local">
                 <span class="mode-icon">👥</span>
-                <span>PVP</span>
+                <span>ローカル</span>
+            </button>
+            <button class="mode-btn" data-mode="online">
+                <span class="mode-icon">🌐</span>
+                <span>オンライン</span>
             </button>
             <button class="mode-btn" data-mode="pvc">
                 <span class="mode-icon">🤖</span>
-                <span>PVC</span>
+                <span>CPU</span>
             </button>
         </div>
 
@@ -37,6 +43,44 @@
                 <option value="medium" selected>Medium</option>
                 <option value="hard">Hard</option>
             </select>
+        </div>
+
+        <!-- オンライン接続UI（オンラインモード時のみ表示） -->
+        <div class="online-connection hidden">
+            <div class="connection-status">
+                <span class="status-indicator" id="connection-status">🔴</span>
+                <span id="status-text">未接続</span>
+            </div>
+
+            <div class="connection-controls">
+                <div class="room-section">
+                    <button class="btn btn-primary" id="create-room">
+                        <span>➕</span> ルームを作成
+                    </button>
+                    <div class="room-info hidden" id="room-info">
+                        <label>ルームID:</label>
+                        <div class="room-id-display">
+                            <code id="room-id-display"></code>
+                            <button class="btn-copy" id="copy-room-id" title="コピー">📋</button>
+                        </div>
+                        <p class="room-hint">このIDを友達に共有してください</p>
+                    </div>
+                </div>
+
+                <div class="join-section">
+                    <div class="join-input-group">
+                        <input
+                            type="text"
+                            id="room-id-input"
+                            placeholder="ルームIDを入力"
+                            maxlength="20"
+                        />
+                        <button class="btn btn-primary" id="join-room">
+                            <span>🔗</span> 参加
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- スコアボード -->
@@ -89,9 +133,42 @@
             <button class="btn btn-secondary" id="reset-score">
                 <span>📊</span> スコアリセット
             </button>
+            <button class="btn btn-secondary" id="view-history">
+                <span>📜</span> 履歴
+            </button>
             <button class="btn btn-icon" id="sound-toggle" title="サウンド">
                 <span id="sound-icon">🔊</span>
             </button>
+        </div>
+    </div>
+
+    <!-- ゲーム履歴モーダル -->
+    <div class="modal" id="history-modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 class="modal-title">ゲーム履歴</h2>
+                <button class="modal-close" id="close-history">✕</button>
+            </div>
+            <div class="history-stats">
+                <div class="stat-card">
+                    <div class="stat-label">総ゲーム数</div>
+                    <div class="stat-value" id="total-games">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">勝率</div>
+                    <div class="stat-value" id="win-rate">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">最長連勝</div>
+                    <div class="stat-value" id="max-streak">0</div>
+                </div>
+            </div>
+            <div class="history-list" id="history-list">
+                <!-- JavaScriptで生成 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="clear-history">履歴をクリア</button>
+            </div>
         </div>
     </div>
 
