@@ -22,7 +22,7 @@ class ConnectFourGame {
     constructor() {
         this.initialized = false;
         this.board3d = null;
-        this.use3D = true; // 3Dモードを使用
+        this.use3D = false; // 2Dモードを使用
     }
 
     /**
