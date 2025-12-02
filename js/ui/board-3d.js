@@ -201,14 +201,15 @@ export class Board3D {
         });
 
         const startX = -(GAME_CONFIG.COLS - 1) * cellSize / 2;
-        const startY = (GAME_CONFIG.ROWS - 1) * cellSize / 2;
 
         for (let row = 0; row < GAME_CONFIG.ROWS; row++) {
             for (let col = 0; col < GAME_CONFIG.COLS; col++) {
                 const holeMesh = new THREE.Mesh(holeGeometry, holeMaterial);
+                // ボードフレーム内に正確に配置（下端から0.6上がセル中心）
+                const y = cellSize / 2 + (GAME_CONFIG.ROWS - 1 - row) * cellSize;
                 holeMesh.position.set(
                     startX + col * cellSize,
-                    startY - row * cellSize,
+                    y,
                     -0.3
                 );
                 holeMesh.rotation.x = Math.PI / 2;
@@ -228,7 +229,7 @@ export class Board3D {
         const startX = -(GAME_CONFIG.COLS - 1) * cellSize / 2;
         const x = startX + col * cellSize;
         const y = 10; // 上から落とす
-        const z = 0;
+        const z = -0.3; // 穴と同じZ座標
 
         // Three.jsのメッシュを作成
         const radius = 0.5;
@@ -304,8 +305,9 @@ export class Board3D {
                 const player = board[row][col];
                 if (player !== GAME_CONFIG.EMPTY) {
                     const x = startX + col * cellSize;
-                    const y = (GAME_CONFIG.ROWS - 1 - row) * cellSize + 0.5;
-                    const z = 0;
+                    // 穴と同じY座標計算
+                    const y = cellSize / 2 + (GAME_CONFIG.ROWS - 1 - row) * cellSize;
+                    const z = -0.3; // 穴と同じZ座標
 
                     // ディスクを配置（物理演算なし、静的配置）
                     this._placeStaticDisc(x, y, z, player);

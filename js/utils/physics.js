@@ -21,18 +21,36 @@ export class PhysicsWorld {
         this.world = new CANNON.World();
         this.world.gravity.set(0, -30, 0); // 重力設定
 
-        // 地面（ボード底面）を作成
-        const groundShape = new CANNON.Box(new CANNON.Vec3(5, 0.5, 3));
-        const groundBody = new CANNON.Body({
-            mass: 0, // 質量0 = 静止オブジェクト
-            shape: groundShape,
-            position: new CANNON.Vec3(0, -0.5, 0)
-        });
-        this.world.addBody(groundBody);
-        this.board = groundBody;
+        // 各行に「棚」を作成（ディスクが正確な行に止まるように）
+        this._createShelves();
 
         // 壁を作成（ディスクがボードから落ちないように）
         this._createWalls();
+    }
+
+    /**
+     * 各行の棚を作成
+     * @private
+     */
+    _createShelves() {
+        const cellSize = 1.2;
+        const boardWidth = GAME_CONFIG.COLS * cellSize;
+        const shelfThickness = 0.2;
+
+        for (let row = 0; row < GAME_CONFIG.ROWS; row++) {
+            // ディスクが止まるべきY座標
+            const discY = cellSize / 2 + (GAME_CONFIG.ROWS - 1 - row) * cellSize;
+            // 棚の中心Y座標（ディスクの底から棚の厚み半分下）
+            const shelfY = discY - 0.1 - shelfThickness / 2;
+
+            const shelfShape = new CANNON.Box(new CANNON.Vec3(boardWidth / 2, shelfThickness / 2, 1.5));
+            const shelfBody = new CANNON.Body({
+                mass: 0,
+                shape: shelfShape,
+                position: new CANNON.Vec3(0, shelfY, -0.3)
+            });
+            this.world.addBody(shelfBody);
+        }
     }
 
     /**
@@ -41,29 +59,30 @@ export class PhysicsWorld {
      */
     _createWalls() {
         const wallThickness = 0.5;
-        const boardWidth = GAME_CONFIG.COLS * 1.2;
-        const boardHeight = GAME_CONFIG.ROWS * 1.2;
+        const cellSize = 1.2;
+        const boardWidth = GAME_CONFIG.COLS * cellSize;
+        const boardHeight = GAME_CONFIG.ROWS * cellSize;
 
         // 左壁
         const leftWall = new CANNON.Body({
             mass: 0,
-            shape: new CANNON.Box(new CANNON.Vec3(wallThickness, boardHeight, 3)),
-            position: new CANNON.Vec3(-boardWidth / 2 - wallThickness, boardHeight / 2, 0)
+            shape: new CANNON.Box(new CANNON.Vec3(wallThickness / 2, boardHeight / 2, 1.5)),
+            position: new CANNON.Vec3(-boardWidth / 2 - wallThickness / 2, boardHeight / 2, -0.3)
         });
         this.world.addBody(leftWall);
 
         // 右壁
         const rightWall = new CANNON.Body({
             mass: 0,
-            shape: new CANNON.Box(new CANNON.Vec3(wallThickness, boardHeight, 3)),
-            position: new CANNON.Vec3(boardWidth / 2 + wallThickness, boardHeight / 2, 0)
+            shape: new CANNON.Box(new CANNON.Vec3(wallThickness / 2, boardHeight / 2, 1.5)),
+            position: new CANNON.Vec3(boardWidth / 2 + wallThickness / 2, boardHeight / 2, -0.3)
         });
         this.world.addBody(rightWall);
 
         // 奥壁
         const backWall = new CANNON.Body({
             mass: 0,
-            shape: new CANNON.Box(new CANNON.Vec3(boardWidth, boardHeight, wallThickness)),
+            shape: new CANNON.Box(new CANNON.Vec3(boardWidth / 2, boardHeight / 2, wallThickness / 2)),
             position: new CANNON.Vec3(0, boardHeight / 2, -1.5)
         });
         this.world.addBody(backWall);
