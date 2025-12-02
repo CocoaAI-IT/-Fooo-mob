@@ -9,6 +9,9 @@ import { gameState } from '../state.js';
 import { Player } from '../game/player.js';
 
 export class BoardUI {
+    // 前回のボード状態を保存
+    static previousBoard = null;
+
     /**
      * ボードを描画
      * @param {HTMLElement} boardElement - ボード要素
@@ -26,6 +29,9 @@ export class BoardUI {
                 boardElement.appendChild(cell);
             }
         }
+
+        // ボード状態を初期化
+        this.previousBoard = gameState.getBoardCopy();
     }
 
     /**
@@ -35,22 +41,40 @@ export class BoardUI {
         const cells = document.getElementById('board').children;
         const board = gameState.getBoardCopy();
 
+        // 前回の状態がない場合は初期化
+        if (!this.previousBoard) {
+            this.previousBoard = Array(GAME_CONFIG.ROWS).fill(null)
+                .map(() => Array(GAME_CONFIG.COLS).fill(GAME_CONFIG.EMPTY));
+        }
+
         for (let row = 0; row < GAME_CONFIG.ROWS; row++) {
             for (let col = 0; col < GAME_CONFIG.COLS; col++) {
                 const index = row * GAME_CONFIG.COLS + col;
                 const cell = cells[index];
+                const currentValue = board[row][col];
+                const previousValue = this.previousBoard[row][col];
+
+                // セルの内容をクリア
                 cell.innerHTML = '';
                 cell.classList.remove('filled', 'drop-animation');
 
-                if (board[row][col] !== GAME_CONFIG.EMPTY) {
+                if (currentValue !== GAME_CONFIG.EMPTY) {
                     const disc = document.createElement('span');
-                    const colorClass = Player.getPlayerColorClass(board[row][col]);
+                    const colorClass = Player.getPlayerColorClass(currentValue);
                     disc.className = `player-disc ${colorClass}`;
                     cell.appendChild(disc);
-                    cell.classList.add('filled', 'drop-animation');
+                    cell.classList.add('filled');
+
+                    // 新しく追加されたディスクのみアニメーション
+                    if (previousValue === GAME_CONFIG.EMPTY) {
+                        cell.classList.add('drop-animation');
+                    }
                 }
             }
         }
+
+        // 現在の状態を保存
+        this.previousBoard = board.map(row => [...row]);
     }
 
     /**
@@ -78,13 +102,23 @@ export class BoardUI {
         const colorClass = Player.getCurrentPlayerColorClass();
         previewDisc.className = `preview-disc ${colorClass}`;
 
-        const cellSize = parseFloat(getComputedStyle(document.documentElement)
-            .getPropertyValue(UI_CONFIG.CELL_SIZE_VAR));
-        const gap = 8;
-        const padding = 10;
-        const leftPosition = padding + col * (cellSize + gap);
+        // 実際のセル要素の位置を取得して正確に配置
+        const boardElement = document.getElementById('board');
+        const cells = boardElement.children;
 
-        previewDisc.style.left = `${leftPosition}px`;
+        // 指定された列の最初の行のセルを取得（グリッドの0行目のセル）
+        const targetCellIndex = col;
+        const targetCell = cells[targetCellIndex];
+
+        if (targetCell) {
+            const boardRect = boardElement.getBoundingClientRect();
+            const cellRect = targetCell.getBoundingClientRect();
+
+            // ボードの左端からセルの左端までの相対位置
+            const leftPosition = cellRect.left - boardRect.left;
+
+            previewDisc.style.left = `${leftPosition}px`;
+        }
     }
 
     /**
